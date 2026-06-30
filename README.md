@@ -367,23 +367,10 @@ The entire pipeline runs automatically every day at **2 AM**.
 
 ## Vikas Mehta
 
-Azure Data Engineering Project
+Azure Data Engineering | Databricks | PySpark | Power BI | Azure Data Factory
 
-### Skills Demonstrated
+[![GitHub](https://img.shields.io/badge/GitHub-vikasmehta1921-black?logo=github)](https://github.com/vikasmehta1921)
 
-- Azure Data Factory
-- Azure Data Lake Storage Gen2
-- Azure Databricks
-- PySpark
-- Delta Lake
-- Databricks SQL Warehouse
-- Power BI
-- DAX
-- Data Modeling
-
-### GitHub
-https://github.com/vikasmehta1921
-
----
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Vikas%20Mehta-blue?logo=linkedin)](https://www.linkedin.com/in/vikas-mehta-51173737b)
 
 ## ⭐ If you found this project useful, consider giving it a star on GitHub.
