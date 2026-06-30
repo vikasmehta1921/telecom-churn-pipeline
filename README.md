@@ -1,188 +1,389 @@
 # 📡 Telecom Customer Churn Prediction Pipeline
 
-An end-to-end Azure data engineering pipeline that processes 2 million 
-telecom customer records to predict churn risk using PySpark on Databricks.
+An end-to-end Azure Data Engineering project that processes **2 million telecom customer records** using the **Azure Medallion Architecture (Bronze → Silver → Gold)** to identify churn risk signals and generate actionable business insights using **PySpark, Databricks, Azure SQL, and Power BI**.
 
 ---
 
-## 🏗️ Architecture
+# 🏗️ Solution Architecture
 
 ![Architecture](Screenshots/telecom_churn_architecture.png)
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Technology Stack
 
-| Layer | Tool |
-|---|---|
-| Data Source | Synthetic Telecom Dataset (2M rows) |
+| Layer | Technology |
+|-------|------------|
+| Data Source | Synthetic Telecom Dataset (2M Rows) |
 | Ingestion | Azure Data Factory |
-| Storage | ADLS Gen2 (Bronze/Silver/Gold) |
+| Storage | Azure Data Lake Storage Gen2 |
 | Processing | Azure Databricks (PySpark) |
-| Warehouse | Azure SQL Database |
-| Visualization | Power BI Desktop (6 pages) |
-| Orchestration | ADF Pipeline with daily trigger |
+| Data Model | Medallion Architecture |
+| Query Engine | Databricks SQL Warehouse |
+| Visualization | Power BI Desktop |
+| Orchestration | Azure Data Factory Pipeline |
+| Language | Python, PySpark, SQL, DAX |
 
 ---
 
-## 📊 Dashboard Screenshots
+# 🏅 Medallion Architecture
 
-### Page 1 — Executive Overview
+## 🥉 Bronze Layer
+Raw source data stored exactly as received.
+
+Datasets:
+- customer_profile.csv
+- billing_data.csv
+- cdr_simulation.csv
+
+Purpose:
+- Preserve raw data
+- Enable replay and reprocessing
+- Maintain auditability
+
+---
+
+## 🥈 Silver Layer
+Cleaned and standardized datasets.
+
+Transformations:
+- Null handling
+- Duplicate removal
+- Type casting
+- Standardized categorical values
+- Data quality validation
+
+---
+
+## 🥇 Gold Layer
+Business-ready analytical tables optimized for reporting.
+
+Gold Tables:
+
+| Table | Purpose |
+|-------|---------|
+| fact_churn_dashboard | Customer 360 view with churn risk |
+| fact_customer_segments | Customer segmentation analysis |
+| fact_revenue_summary | Revenue aggregation and KPIs |
+| fact_contract_analysis | Contract type analysis |
+| fact_service_usage | Service usage insights |
+| dim_date | Time intelligence |
+
+---
+
+# 📊 Dashboard Screenshots
+
+## Page 1 — Executive Overview
 ![Overview](Screenshots/page1_overview.png)
 
-### Page 2 — Churn Deep Dive
-![Deep Dive](Screenshots/page2_churn_deepdive.png)
+## Page 2 — Churn Risk Deep Dive
+![DeepDive](Screenshots/page2_churn_deepdive.png)
 
-### Page 3 — Financial Impact
+## Page 3 — Financial Impact Analysis
 ![Financial](Screenshots/page3_financial_impact.png)
 
-### Page 4 — Customer Segmentation
+## Page 4 — Customer Segmentation
 ![Segments](Screenshots/page4_customer_segments.png)
 
-### Page 5 — Retention Action Plan
+## Page 5 — Retention Action Plan
 ![Retention](Screenshots/page5_retention_plan.png)
 
-### Page 6 — Pipeline Summary
+## Page 6 — Data Pipeline Summary
 ![Pipeline](Screenshots/page6_pipeline_summary.png)
 
 ---
 
-## 🔍 Churn Risk Signals Discovered
+# 📈 Business KPIs
 
-| Signal | Condition | Weight |
-|---|---|---|
-| Contract Type | Month-to-month | 35 points |
-| Tenure | Less than 18 months | 25 points |
-| Monthly Charges | Greater than $74 | 20 points |
-| Billing Spike | Max bill > 2x average | 20 points |
-
----
-
-## 📈 Key Results
-
-- **2,000,000** customer records processed
-- **834,842** high risk customers identified (41.7%)
-- **$25.73M** monthly revenue at risk
-- **34.6%** overall churn rate
-- **343K** customers with critical risk score ≥ 80
+| Metric | Value |
+|--------|-------|
+| Total Customers Processed | 2,000,000 |
+| High Risk Customers | 834,842 |
+| High Risk Percentage | 41.74% |
+| Overall Churn Rate | 34.62% |
+| Revenue at Risk | $62.78M |
+| Critical Risk Customers (Score ≥ 80) | 343,000 |
 
 ---
 
-## 🗂️ Project Structure
+# 🔍 Churn Risk Signals
+
+| Signal | Business Rule | Weight |
+|--------|--------------|--------|
+| Contract Type | Month-to-month contract | 35 Points |
+| Tenure | Less than 18 months | 25 Points |
+| Monthly Charges | Greater than $74 | 20 Points |
+| Billing Spike | Bill exceeds 2x average | 20 Points |
+
+Maximum Risk Score = **100 Points**
+
+Risk Categories:
+
+| Score Range | Risk Label |
+|------------|-----------|
+| 80 - 100 | High |
+| 50 - 79 | Medium |
+| 0 - 49 | Low |
+
+---
+
+# 📂 Project Structure
+
+```text
 telecom-churn-project/
-
+│
 ├── Screenshots/
-
+│   ├── telecom_churn_architecture.png
 │   ├── page1_overview.png
-
 │   ├── page2_churn_deepdive.png
-
 │   ├── page3_financial_impact.png
-
 │   ├── page4_customer_segments.png
-
 │   ├── page5_retention_plan.png
-
-│   ├── page6_pipeline_summary.png
-
-│   └── telecom_churn_architecture.png
-
-├── PowerBI DashBoard/
-
-│   └── churn_dashboard.pbix
-
+│   └── page6_pipeline_summary.png
+│
+├── PowerBI Dashboard/
+│   └── telecom_churn_dashboard.pbix
+│
 ├── notebooks/
-
-│   └── churn_transform.ipynb
-
+│   ├── 01_bronze_ingestion.ipynb
+│   ├── 02_silver_transformation.ipynb
+│   ├── 03_gold_business_logic.ipynb
+│   ├── 04_register_sql_tables.ipynb
+│   ├── 05_databricks_sql_warehouse.ipynb
+│   └── 06_pipeline_validation.ipynb
+│
 ├── scripts/
-
+│   ├── generate_data.py
 │   ├── split_data.py
-
-│   └── generate_data.py
-
+│   └── risk_scoring.py
+│
 ├── config/
-
 │   └── config_sample.py
+│
+├── requirements.txt
+│
+├── README.md
+│
+└── .gitignore
+```
 
-├── requirement.txt
-
-└── README.md
 ---
 
-## 🚀 Pipeline Steps
+# 🚀 End-to-End Pipeline Flow
 
-### 1. Data Generation
+```text
+Synthetic Data
+      ↓
+Azure Data Factory
+      ↓
+ADLS Bronze Layer
+      ↓
+Databricks Silver Layer
+      ↓
+Databricks Gold Layer
+      ↓
+Databricks SQL Warehouse
+      ↓
+Power BI Dashboard
+```
+
+---
+
+# ⚙️ Pipeline Execution Steps
+
+## Step 1 — Data Generation
+
 ```python
-# Generate 2 million synthetic telecom customers
 N = 2_000_000
-# Outputs: customer_profile.csv, billing_data.csv, cdr_simulation.csv
+
 python scripts/generate_data.py
 ```
 
-### 2. Bronze Layer (ADLS Gen2)
-- Raw CSV files uploaded to `bronze` container
-- No transformation — raw data preserved
+Generated datasets:
 
-### 3. Silver Layer (Databricks)
-- Cast data types
-- Remove duplicates and nulls
-- Standardise categorical values
-
-### 4. Gold Layer (Databricks)
-- Join 3 silver tables on `customer_id`
-- Engineer churn risk score (0-100 points)
-- Classify into High / Medium / Low risk labels
-
-### 5. Azure SQL Database
-- Gold table loaded via JDBC
-- `fact_churn_signals` table with 2M rows
-
-### 6. Power BI Dashboard
-- 6-page interactive dashboard
-- Connected to Azure SQL Database
-- DAX measures for dynamic KPIs
+- customer_profile.csv
+- billing_data.csv
+- cdr_simulation.csv
 
 ---
 
-## ⚙️ ADF Pipeline
+## Step 2 — Bronze Layer
 
-- Pipeline: `pl_telecom_churn`
-- Activity: Databricks Notebook
-- Trigger: Daily at 2:00 AM
-- Linked services: ADLS Gen2, Azure SQL, Databricks
+Raw datasets uploaded into:
 
----
+```text
+abfss://bronze@sttelcomchurn.dfs.core.windows.net/
+```
 
-## 💡 Key Learnings
-
-- Medallion architecture (Bronze/Silver/Gold) for data lake design
-- PySpark DataFrame operations at scale (2M rows)
-- Feature engineering without ML models using domain knowledge
-- DAX measures for dynamic KPI calculations in Power BI
-- Azure cloud resource management within student credit limits
+No transformations performed.
 
 ---
 
-## 🎯 Interview Prep
+## Step 3 — Silver Layer
 
-### Q: Why medallion architecture?
-Bronze preserves raw data for reprocessing. Silver ensures clean typed data. Gold contains business-ready aggregations. Each layer serves a different consumer with different quality requirements.
+Operations:
 
-### Q: Why PySpark over pandas?
-2 million rows is manageable in pandas but PySpark scales to billions. Using Spark demonstrates production-ready thinking and the ability to handle enterprise data volumes.
-
-### Q: Why these 4 churn signals?
-Discovered through manual EDA — month-to-month customers have no switching cost, short tenure customers have not built loyalty, high charges create value perception issues, and billing spikes cause immediate dissatisfaction.
-
-### Q: How does ADF orchestrate the pipeline?
-A Databricks Notebook Activity triggers the PySpark transformation after source files land in ADLS bronze. A schedule trigger runs this daily at 2 AM automatically.
+- Data cleansing
+- Null handling
+- Deduplication
+- Type casting
+- Data standardization
 
 ---
 
-## 👤 Author
+## Step 4 — Gold Layer
 
-**Vikas Mehta**
-Data Engineering Project | Azure | Databricks | PySpark | Power BI
+Operations:
 
-[![GitHub](https://img.shields.io/badge/GitHub-vikasmehta1921-black?logo=github)](https://github.com/vikasmehta1921)
+- Join customer, billing and CDR datasets
+- Feature engineering
+- Risk score generation
+- Churn segmentation
+- Aggregation table creation
+
+---
+
+## Step 5 — Databricks SQL Warehouse
+
+Published Gold tables:
+
+- fact_churn_dashboard
+- fact_customer_segments
+- fact_revenue_summary
+- fact_contract_analysis
+- fact_service_usage
+- dim_date
+
+---
+
+## Step 6 — Power BI
+
+Features:
+
+- 6 Interactive dashboard pages
+- Dynamic DAX measures
+- Slicers and filters
+- Drill-down analysis
+
+---
+
+# 🔄 Azure Data Factory Pipeline
+
+Pipeline Name:
+
+```text
+pl_telecom_churn_v2
+```
+
+Activities:
+
+1. Bronze Load Notebook
+2. Silver Load Notebook
+3. Gold Load Notebook
+
+Trigger:
+
+```text
+Daily at 02:00 AM
+```
+
+Connected Services:
+
+- Azure Data Lake Storage Gen2
+- Azure Databricks
+- Databricks SQL Warehouse
+
+---
+
+# 📚 Key Learnings
+
+- Azure Medallion Architecture
+- Data Lake Design Patterns
+- PySpark Distributed Processing
+- Delta Lake Storage
+- Databricks SQL Warehouse
+- Azure Data Factory Orchestration
+- Power BI Dashboard Development
+- DAX Measure Development
+- Cloud Resource Optimization
+
+---
+
+# 🎯 Interview Questions
+
+## Why Medallion Architecture?
+
+Bronze preserves raw immutable data, Silver provides clean and validated datasets, and Gold delivers business-ready analytics optimized for reporting and dashboards.
+
+---
+
+## Why PySpark instead of Pandas?
+
+Although 2 million rows can be processed in pandas, PySpark provides distributed execution and scalability suitable for enterprise workloads containing billions of records.
+
+---
+
+## Why Databricks SQL Warehouse?
+
+Databricks SQL Warehouse provides a high-performance analytical query engine optimized for BI workloads and seamless integration with Power BI.
+
+---
+
+## Why these churn signals?
+
+The signals were identified through exploratory analysis and business understanding:
+
+- Month-to-month customers have low switching costs.
+- New customers have lower loyalty.
+- High monthly charges create dissatisfaction.
+- Billing spikes frequently lead to churn events.
+
+---
+
+## How does ADF orchestrate the pipeline?
+
+ADF triggers Databricks notebooks in sequence:
+
+```text
+Bronze → Silver → Gold
+```
+
+The entire pipeline runs automatically every day at **2 AM**.
+
+---
+
+# 📏 Project Scale
+
+- 2 Million Records
+- 6 Gold Tables
+- 6 Dashboard Pages
+- 3 Data Sources
+- 5 Azure Services
+- Daily Automated Pipeline
+
+---
+
+# 👨‍💻 Author
+
+## Vikas Mehta
+
+Azure Data Engineering Project
+
+### Skills Demonstrated
+
+- Azure Data Factory
+- Azure Data Lake Storage Gen2
+- Azure Databricks
+- PySpark
+- Delta Lake
+- Databricks SQL Warehouse
+- Power BI
+- DAX
+- Data Modeling
+
+### GitHub
+https://github.com/vikasmehta1921
+
+---
+
+## ⭐ If you found this project useful, consider giving it a star on GitHub.
